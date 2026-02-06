@@ -1,5 +1,5 @@
 import { prisma } from '../config/database';
-import { redis } from '../config/redis';
+import { cacheDel } from '../config/redis';
 import { calculateElo } from '../utils/elo';
 import { AppError } from '../middleware/errorHandler';
 
@@ -136,8 +136,7 @@ export async function confirmMatch(matchId: string, userId: string) {
   });
 
   // Invalidate rankings cache
-  const keys = await redis.keys('rankings:*');
-  if (keys.length > 0) await redis.del(...keys);
+  await cacheDel('rankings:*');
 
   return result;
 }

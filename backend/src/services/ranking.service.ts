@@ -1,12 +1,12 @@
 import { prisma } from '../config/database';
-import { redis } from '../config/redis';
+import { cacheGet, cacheSet } from '../config/redis';
 
 const CACHE_TTL = 300; // 5 minutes
 
 export async function getLeaderboard(page: number, limit: number, district?: string) {
   const cacheKey = `rankings:${district || 'all'}:${page}:${limit}`;
 
-  const cached = await redis.get(cacheKey);
+  const cached = await cacheGet(cacheKey);
   if (cached) return JSON.parse(cached);
 
   const where: any = { isActive: true };
@@ -43,7 +43,7 @@ export async function getLeaderboard(page: number, limit: number, district?: str
 
   const result = { data: ranked, total, page, limit, totalPages: Math.ceil(total / limit) };
 
-  await redis.setex(cacheKey, CACHE_TTL, JSON.stringify(result));
+  await cacheSet(cacheKey, CACHE_TTL, JSON.stringify(result));
 
   return result;
 }

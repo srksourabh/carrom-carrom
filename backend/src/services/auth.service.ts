@@ -1,8 +1,10 @@
 import { prisma } from '../config/database';
-import { redis } from '../config/redis';
+import { cacheGet, cacheSet } from '../config/redis';
 import { generateOtp, storeOtp, verifyOtp } from '../utils/otp';
 import { signAccessToken, signRefreshToken, verifyRefreshToken, JwtPayload } from '../utils/jwt';
 import { AppError } from '../middleware/errorHandler';
+
+const REFRESH_TOKEN_TTL = 7 * 24 * 60 * 60; // 7 days
 
 export async function sendOtp(email: string) {
   const otp = generateOtp();
@@ -45,7 +47,7 @@ export async function verifyOtpAndLogin(email: string, otp: string) {
   const accessToken = signAccessToken(payload);
   const refreshToken = signRefreshToken(payload);
 
-  await redis.setex(`refresh:${user.id}`, 7 * 24 * 60 * 60, refreshToken);
+  await cacheSet(`refresh:${user.id}`, REFRESH_TOKEN_TTL, refreshToken);
 
   return {
     accessToken,
@@ -70,7 +72,7 @@ export async function refreshAccessToken(refreshToken: string) {
     throw new AppError(401, 'Invalid refresh token');
   }
 
-  const stored = await redis.get(`refresh:${payload.userId}`);
+  const stored = await cacheGet(`refresh:${payload.userId}`);
   if (!stored || stored !== refreshToken) {
     throw new AppError(401, 'Refresh token revoked');
   }
@@ -89,7 +91,7 @@ export async function refreshAccessToken(refreshToken: string) {
   const newAccessToken = signAccessToken(newPayload);
   const newRefreshToken = signRefreshToken(newPayload);
 
-  await redis.setex(`refresh:${user.id}`, 7 * 24 * 60 * 60, newRefreshToken);
+  await cacheSet(`refresh:${user.id}`, REFRESH_TOKEN_TTL, newRefreshToken);
 
   return {
     accessToken: newAccessToken,
