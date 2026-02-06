@@ -2,14 +2,18 @@ import axios from 'axios';
 import { Platform } from 'react-native';
 
 // Android emulator uses 10.0.2.2, iOS simulator uses localhost
+// Web production uses relative URL (same domain on Vercel)
 const getBaseUrl = () => {
+  if (Platform.OS === 'web' && !__DEV__) {
+    return '/api/v1';
+  }
   if (__DEV__) {
     if (Platform.OS === 'android') {
       return 'http://10.0.2.2:3000/api/v1';
     }
     return 'http://localhost:3000/api/v1';
   }
-  return 'https://api.carromcarrom.com/api/v1';
+  return 'https://carrom-two.vercel.app/api/v1';
 };
 
 const api = axios.create({
