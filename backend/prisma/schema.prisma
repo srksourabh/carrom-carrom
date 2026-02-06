@@ -1,0 +1,332 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  PLAYER
+  CLUB_ADMIN
+  TOURNAMENT_ADMIN
+  SUPER_ADMIN
+}
+
+enum MatchType {
+  SINGLES
+  DOUBLES
+  PRACTICE
+}
+
+enum MatchStatus {
+  PENDING
+  CONFIRMED
+  DISPUTED
+  CANCELLED
+}
+
+enum TournamentStatus {
+  UPCOMING
+  REGISTRATION_OPEN
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum TournamentFormat {
+  SINGLE_ELIMINATION
+  DOUBLE_ELIMINATION
+  ROUND_ROBIN
+  SWISS
+}
+
+enum ChallengeStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  COMPLETED
+  EXPIRED
+}
+
+enum NotificationType {
+  MATCH_INVITE
+  MATCH_CONFIRMED
+  MATCH_DISPUTED
+  CHALLENGE_RECEIVED
+  CHALLENGE_ACCEPTED
+  TOURNAMENT_UPDATE
+  RANK_CHANGE
+  ACHIEVEMENT_UNLOCKED
+  GENERAL
+}
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  phone         String?  @unique
+  name          String
+  displayName   String?  @map("display_name")
+  avatarUrl     String?  @map("avatar_url")
+  bio           String?
+  role          UserRole @default(PLAYER)
+  eloRating     Int      @default(1200) @map("elo_rating")
+  totalMatches  Int      @default(0) @map("total_matches")
+  wins          Int      @default(0)
+  losses        Int      @default(0)
+  draws         Int      @default(0)
+  winStreak     Int      @default(0) @map("win_streak")
+  bestWinStreak Int      @default(0) @map("best_win_streak")
+  district      String?
+  city          String?
+  state         String?  @default("West Bengal")
+  clubId        String?  @map("club_id")
+  isActive      Boolean  @default(true) @map("is_active")
+  lastLoginAt   DateTime? @map("last_login_at")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  club               Club?                   @relation(fields: [clubId], references: [id])
+  matchesAsPlayer1   Match[]                 @relation("Player1Matches")
+  matchesAsPlayer2   Match[]                 @relation("Player2Matches")
+  matchesAsRecorder  Match[]                 @relation("RecorderMatches")
+  tournamentEntries  TournamentParticipant[]
+  challengesSent     Challenge[]             @relation("ChallengeSender")
+  challengesReceived Challenge[]             @relation("ChallengeReceiver")
+  rankingsHistory    RankingsHistory[]
+  posts              Post[]
+  comments           Comment[]
+  followedBy         Follow[]                @relation("Following")
+  following          Follow[]                @relation("Followers")
+  notifications      Notification[]
+  userAchievements   UserAchievement[]
+
+  @@map("users")
+}
+
+model Club {
+  id           String   @id @default(uuid())
+  name         String   @unique
+  description  String?
+  logoUrl      String?  @map("logo_url")
+  district     String?
+  city         String?
+  state        String?  @default("West Bengal")
+  foundedYear  Int?     @map("founded_year")
+  contactEmail String?  @map("contact_email")
+  contactPhone String?  @map("contact_phone")
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  members     User[]
+  tournaments Tournament[]
+
+  @@map("clubs")
+}
+
+model Match {
+  id           String      @id @default(uuid())
+  matchType    MatchType   @default(SINGLES) @map("match_type")
+  player1Id    String      @map("player1_id")
+  player2Id    String      @map("player2_id")
+  player1Score Int         @map("player1_score")
+  player2Score Int         @map("player2_score")
+  winnerId     String?     @map("winner_id")
+  status       MatchStatus @default(PENDING)
+  venue        String?
+  district     String?
+  playedAt     DateTime    @map("played_at")
+  tournamentId String?     @map("tournament_id")
+  recordedById String?     @map("recorded_by_id")
+  eloChangeP1  Int?        @map("elo_change_p1")
+  eloChangeP2  Int?        @map("elo_change_p2")
+  notes        String?
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
+
+  player1    User        @relation("Player1Matches", fields: [player1Id], references: [id])
+  player2    User        @relation("Player2Matches", fields: [player2Id], references: [id])
+  recordedBy User?       @relation("RecorderMatches", fields: [recordedById], references: [id])
+  tournament Tournament? @relation(fields: [tournamentId], references: [id])
+
+  @@index([player1Id])
+  @@index([player2Id])
+  @@index([playedAt])
+  @@index([status])
+  @@map("matches")
+}
+
+model Tournament {
+  id              String           @id @default(uuid())
+  name            String
+  description     String?
+  format          TournamentFormat @default(SINGLE_ELIMINATION)
+  status          TournamentStatus @default(UPCOMING)
+  startDate       DateTime         @map("start_date")
+  endDate         DateTime?        @map("end_date")
+  registrationEnd DateTime?        @map("registration_end")
+  venue           String?
+  district        String?
+  city            String?
+  maxParticipants Int?             @map("max_participants")
+  entryFee        Decimal?         @map("entry_fee") @db.Decimal(10, 2)
+  prizePool       String?          @map("prize_pool")
+  rules           String?
+  organizerClubId String?          @map("organizer_club_id")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+
+  organizerClub Club?                   @relation(fields: [organizerClubId], references: [id])
+  participants  TournamentParticipant[]
+  matches       Match[]
+
+  @@map("tournaments")
+}
+
+model TournamentParticipant {
+  id           String   @id @default(uuid())
+  tournamentId String   @map("tournament_id")
+  userId       String   @map("user_id")
+  seed         Int?
+  placement    Int?
+  isEliminated Boolean  @default(false) @map("is_eliminated")
+  registeredAt DateTime @default(now()) @map("registered_at")
+
+  tournament Tournament @relation(fields: [tournamentId], references: [id])
+  user       User       @relation(fields: [userId], references: [id])
+
+  @@unique([tournamentId, userId])
+  @@map("tournament_participants")
+}
+
+model Challenge {
+  id            String          @id @default(uuid())
+  senderId      String          @map("sender_id")
+  receiverId    String          @map("receiver_id")
+  status        ChallengeStatus @default(PENDING)
+  message       String?
+  proposedDate  DateTime?       @map("proposed_date")
+  proposedVenue String?         @map("proposed_venue")
+  expiresAt     DateTime        @map("expires_at")
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
+
+  sender   User @relation("ChallengeSender", fields: [senderId], references: [id])
+  receiver User @relation("ChallengeReceiver", fields: [receiverId], references: [id])
+
+  @@map("challenges")
+}
+
+model RankingsHistory {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  eloRating Int      @map("elo_rating")
+  rank      Int
+  period    String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, period])
+  @@index([period])
+  @@map("rankings_history")
+}
+
+model LiveStream {
+  id           String    @id @default(uuid())
+  title        String
+  description  String?
+  streamUrl    String    @map("stream_url")
+  thumbnailUrl String?   @map("thumbnail_url")
+  isLive       Boolean   @default(false) @map("is_live")
+  viewerCount  Int       @default(0) @map("viewer_count")
+  startedAt    DateTime? @map("started_at")
+  endedAt      DateTime? @map("ended_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  @@map("live_streams")
+}
+
+model Post {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  content   String
+  imageUrl  String?  @map("image_url")
+  likes     Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user     User      @relation(fields: [userId], references: [id])
+  comments Comment[]
+
+  @@map("posts")
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  postId    String   @map("post_id")
+  userId    String   @map("user_id")
+  content   String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("comments")
+}
+
+model Follow {
+  id          String   @id @default(uuid())
+  followerId  String   @map("follower_id")
+  followingId String   @map("following_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  follower  User @relation("Followers", fields: [followerId], references: [id])
+  following User @relation("Following", fields: [followingId], references: [id])
+
+  @@unique([followerId, followingId])
+  @@map("follows")
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String           @map("user_id")
+  type      NotificationType
+  title     String
+  body      String
+  data      Json?
+  isRead    Boolean          @default(false) @map("is_read")
+  createdAt DateTime         @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, isRead])
+  @@map("notifications")
+}
+
+model Achievement {
+  id          String @id @default(uuid())
+  name        String @unique
+  description String
+  iconUrl     String? @map("icon_url")
+  criteria    Json
+
+  userAchievements UserAchievement[]
+
+  @@map("achievements")
+}
+
+model UserAchievement {
+  id            String   @id @default(uuid())
+  userId        String   @map("user_id")
+  achievementId String   @map("achievement_id")
+  unlockedAt    DateTime @default(now()) @map("unlocked_at")
+
+  user        User        @relation(fields: [userId], references: [id])
+  achievement Achievement @relation(fields: [achievementId], references: [id])
+
+  @@unique([userId, achievementId])
+  @@map("user_achievements")
+}

@@ -1,0 +1,10 @@
+{
+  "name": "carrom-carrom",
+  "version": "1.0.0",
+  "private": true,
+  "description": "West Bengal Carrom Community Platform",
+  "workspaces": [
+    "backend",
+    "mobile"
+  ]
+}

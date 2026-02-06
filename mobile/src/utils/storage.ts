@@ -1,0 +1,17 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+export async function getItem(key: string): Promise<string | null> {
+  return AsyncStorage.getItem(key);
+}
+
+export async function setItem(key: string, value: string): Promise<void> {
+  return AsyncStorage.setItem(key, value);
+}
+
+export async function removeItem(key: string): Promise<void> {
+  return AsyncStorage.removeItem(key);
+}
+
+export async function clear(): Promise<void> {
+  return AsyncStorage.clear();
+}
