@@ -8,6 +8,9 @@ import { success } from '../utils/apiResponse';
 
 const router = Router();
 
+// Unauthenticated debug ping
+router.get('/ping', (_req, res) => res.json({ pong: true, v: 3, t: Date.now() }));
+
 router.use(authenticate);
 
 // Inline handler with full error capture for debugging
