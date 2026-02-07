@@ -9,11 +9,20 @@ import { success } from '../utils/apiResponse';
 const router = Router();
 
 // Unauthenticated debug ping
-router.get('/ping', (_req, res) => res.json({ pong: true, v: 3, t: Date.now() }));
+router.get('/ping', (_req, res) => res.json({ pong: true, v: 4, t: Date.now() }));
+
+// Bare minimum test: no auth, no validation, just try the service call
+router.post('/test-start', async (req: Request, res: Response) => {
+  try {
+    res.json({ step: 'handler reached', body: req.body });
+  } catch (err: any) {
+    res.status(500).json({ step: 'handler error', message: err.message });
+  }
+});
 
 router.use(authenticate);
 
-// Inline handler with full error capture for debugging
+// Inline handler with full error capture
 router.post('/conversations', validate(startConversationSchema), async (req: Request, res: Response) => {
   try {
     const result = await chatService.startConversation(
