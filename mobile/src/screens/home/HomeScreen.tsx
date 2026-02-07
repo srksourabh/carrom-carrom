@@ -72,6 +72,19 @@ export function HomeScreen({ navigation }: Props) {
         </Card.Content>
       </Card>
 
+      <Card style={styles.ctaCard}>
+        <Card.Content style={styles.ctaContent}>
+          <Text style={styles.ctaText}>Explore carrom clubs near you</Text>
+          <Button
+            mode="contained"
+            onPress={() => navigation.navigate('ClubsList')}
+            buttonColor={colors.primary}
+          >
+            Browse Clubs
+          </Button>
+        </Card.Content>
+      </Card>
+
       <RecentMatchesList
         matches={matchData?.matches || []}
         currentUserId={profile?.id || user?.id || ''}

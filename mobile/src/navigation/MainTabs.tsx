@@ -11,17 +11,29 @@ import { MatchDetailScreen } from '../screens/match/MatchDetailScreen';
 import { ChallengesListScreen } from '../screens/challenge/ChallengesListScreen';
 import { CreateChallengeScreen } from '../screens/challenge/CreateChallengeScreen';
 import { ChallengeDetailScreen } from '../screens/challenge/ChallengeDetailScreen';
-import { PlayScreen } from '../screens/play/PlayScreen';
+import { ClubsListScreen } from '../screens/club/ClubsListScreen';
+import { ClubDetailScreen } from '../screens/club/ClubDetailScreen';
 import { ProfileScreen } from '../screens/profile/ProfileScreen';
 import { EditProfileScreen } from '../screens/profile/EditProfileScreen';
 import { colors } from '../theme';
 import { MainTabParamList } from './types';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
+const HomeStack = createNativeStackNavigator();
 const RankingsStack = createNativeStackNavigator();
 const MatchStack = createNativeStackNavigator();
 const ChallengesStack = createNativeStackNavigator();
 const ProfileStack = createNativeStackNavigator();
+
+function HomeStackScreen() {
+  return (
+    <HomeStack.Navigator>
+      <HomeStack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
+      <HomeStack.Screen name="ClubsList" component={ClubsListScreen} options={{ title: 'Clubs' }} />
+      <HomeStack.Screen name="ClubDetail" component={ClubDetailScreen} options={{ title: 'Club' }} />
+    </HomeStack.Navigator>
+  );
+}
 
 function RankingsStackScreen() {
   return (
@@ -78,7 +90,7 @@ export function MainTabs() {
     >
       <Tab.Screen
         name="HomeTab"
-        component={HomeScreen}
+        component={HomeStackScreen}
         options={{
           tabBarLabel: 'Home',
           tabBarIcon: () => null,
