@@ -16,6 +16,9 @@ import { ClubDetailScreen } from '../screens/club/ClubDetailScreen';
 import { FeedScreen } from '../screens/feed/FeedScreen';
 import { CreatePostScreen } from '../screens/feed/CreatePostScreen';
 import { PostDetailScreen } from '../screens/feed/PostDetailScreen';
+import { ConversationsListScreen } from '../screens/chat/ConversationsListScreen';
+import { ChatScreen } from '../screens/chat/ChatScreen';
+import { NewChatScreen } from '../screens/chat/NewChatScreen';
 import { ProfileScreen } from '../screens/profile/ProfileScreen';
 import { EditProfileScreen } from '../screens/profile/EditProfileScreen';
 import { colors } from '../theme';
@@ -37,6 +40,9 @@ function HomeStackScreen() {
       <HomeStack.Screen name="Feed" component={FeedScreen} options={{ title: 'Community Feed' }} />
       <HomeStack.Screen name="CreatePost" component={CreatePostScreen} options={{ title: 'New Post' }} />
       <HomeStack.Screen name="PostDetail" component={PostDetailScreen} options={{ title: 'Post' }} />
+      <HomeStack.Screen name="Conversations" component={ConversationsListScreen} options={{ title: 'Messages' }} />
+      <HomeStack.Screen name="Chat" component={ChatScreen} options={{ title: 'Chat' }} />
+      <HomeStack.Screen name="NewChat" component={NewChatScreen} options={{ title: 'New Message' }} />
     </HomeStack.Navigator>
   );
 }

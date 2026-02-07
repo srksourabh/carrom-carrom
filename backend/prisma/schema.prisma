@@ -101,6 +101,9 @@ model User {
   postLikes          PostLike[]
   followedBy         Follow[]                @relation("Following")
   following          Follow[]                @relation("Followers")
+  conversationsAs1   Conversation[]          @relation("ConvUser1")
+  conversationsAs2   Conversation[]          @relation("ConvUser2")
+  messagesSent       Message[]               @relation("MessageSender")
   notifications      Notification[]
   userAchievements   UserAchievement[]
 
@@ -306,6 +309,40 @@ model Follow {
 
   @@unique([followerId, followingId])
   @@map("follows")
+}
+
+model Conversation {
+  id           String    @id @default(uuid())
+  participant1 String    @map("participant1_id")
+  participant2 String    @map("participant2_id")
+  lastMessage  String?   @map("last_message")
+  lastMessageAt DateTime? @map("last_message_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  user1    User      @relation("ConvUser1", fields: [participant1], references: [id])
+  user2    User      @relation("ConvUser2", fields: [participant2], references: [id])
+  messages Message[]
+
+  @@unique([participant1, participant2])
+  @@index([participant1])
+  @@index([participant2])
+  @@map("conversations")
+}
+
+model Message {
+  id             String   @id @default(uuid())
+  conversationId String   @map("conversation_id")
+  senderId       String   @map("sender_id")
+  content        String
+  isRead         Boolean  @default(false) @map("is_read")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User         @relation("MessageSender", fields: [senderId], references: [id])
+
+  @@index([conversationId, createdAt])
+  @@map("messages")
 }
 
 model Notification {

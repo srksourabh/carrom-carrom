@@ -7,6 +7,7 @@ import { adminRoutes } from './admin.routes';
 import { challengeRoutes } from './challenge.routes';
 import { clubRoutes } from './club.routes';
 import { feedRoutes } from './feed.routes';
+import { chatRoutes } from './chat.routes';
 
 const router = Router();
 
@@ -18,5 +19,6 @@ router.use('/admin', adminRoutes);
 router.use('/challenges', challengeRoutes);
 router.use('/clubs', clubRoutes);
 router.use('/feed', feedRoutes);
+router.use('/chat', chatRoutes);
 
 export { router as apiRoutes };

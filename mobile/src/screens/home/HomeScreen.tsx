@@ -72,30 +72,34 @@ export function HomeScreen({ navigation }: Props) {
         </Card.Content>
       </Card>
 
-      <Card style={styles.ctaCard}>
-        <Card.Content style={styles.ctaContent}>
-          <Text style={styles.ctaText}>See what the community is up to</Text>
-          <Button
-            mode="contained"
-            onPress={() => navigation.navigate('Feed')}
-            buttonColor={colors.primary}
-          >
-            Community
-          </Button>
-        </Card.Content>
-      </Card>
-
-      <Card style={styles.ctaCard}>
-        <Card.Content style={styles.ctaContent}>
-          <Text style={styles.ctaText}>Explore carrom clubs near you</Text>
-          <Button
-            mode="outlined"
-            onPress={() => navigation.navigate('ClubsList')}
-          >
-            Browse Clubs
-          </Button>
-        </Card.Content>
-      </Card>
+      <View style={styles.quickActions}>
+        <Button
+          mode="contained"
+          onPress={() => navigation.navigate('Feed')}
+          buttonColor={colors.primary}
+          style={styles.quickBtn}
+          compact
+        >
+          Community
+        </Button>
+        <Button
+          mode="contained"
+          onPress={() => navigation.navigate('Conversations')}
+          buttonColor={colors.info}
+          style={styles.quickBtn}
+          compact
+        >
+          Messages
+        </Button>
+        <Button
+          mode="outlined"
+          onPress={() => navigation.navigate('ClubsList')}
+          style={styles.quickBtn}
+          compact
+        >
+          Clubs
+        </Button>
+      </View>
 
       <RecentMatchesList
         matches={matchData?.matches || []}
@@ -149,6 +153,15 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
     color: colors.text,
+    flex: 1,
+  },
+  quickActions: {
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+    marginTop: 16,
+    gap: 8,
+  },
+  quickBtn: {
     flex: 1,
   },
   bottomSpacer: {
