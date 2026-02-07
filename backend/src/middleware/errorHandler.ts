@@ -37,6 +37,9 @@ export function errorHandler(err: any, _req: Request, res: Response, _next: Next
   console.error('Unhandled error:', err);
   return res.status(500).json({
     success: false,
-    message: 'Internal server error',
+    message: err.message || 'Internal server error',
+    _debug_code: err.code,
+    _debug_name: err.name,
+    _debug_stack: err.stack?.substring(0, 300),
   });
 }
