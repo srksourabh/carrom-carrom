@@ -59,7 +59,7 @@ export async function getConversations(userId: string, page: number, limit: numb
   const [conversations, total] = await Promise.all([
     prisma.conversation.findMany({
       where,
-      orderBy: { lastMessageAt: { sort: 'desc', nulls: 'last' } },
+      orderBy: { updatedAt: 'desc' },
       skip: (page - 1) * limit,
       take: limit,
       include: {
