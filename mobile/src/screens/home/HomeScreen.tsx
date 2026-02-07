@@ -74,11 +74,23 @@ export function HomeScreen({ navigation }: Props) {
 
       <Card style={styles.ctaCard}>
         <Card.Content style={styles.ctaContent}>
-          <Text style={styles.ctaText}>Explore carrom clubs near you</Text>
+          <Text style={styles.ctaText}>See what the community is up to</Text>
           <Button
             mode="contained"
-            onPress={() => navigation.navigate('ClubsList')}
+            onPress={() => navigation.navigate('Feed')}
             buttonColor={colors.primary}
+          >
+            Community
+          </Button>
+        </Card.Content>
+      </Card>
+
+      <Card style={styles.ctaCard}>
+        <Card.Content style={styles.ctaContent}>
+          <Text style={styles.ctaText}>Explore carrom clubs near you</Text>
+          <Button
+            mode="outlined"
+            onPress={() => navigation.navigate('ClubsList')}
           >
             Browse Clubs
           </Button>

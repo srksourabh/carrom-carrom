@@ -13,6 +13,9 @@ import { CreateChallengeScreen } from '../screens/challenge/CreateChallengeScree
 import { ChallengeDetailScreen } from '../screens/challenge/ChallengeDetailScreen';
 import { ClubsListScreen } from '../screens/club/ClubsListScreen';
 import { ClubDetailScreen } from '../screens/club/ClubDetailScreen';
+import { FeedScreen } from '../screens/feed/FeedScreen';
+import { CreatePostScreen } from '../screens/feed/CreatePostScreen';
+import { PostDetailScreen } from '../screens/feed/PostDetailScreen';
 import { ProfileScreen } from '../screens/profile/ProfileScreen';
 import { EditProfileScreen } from '../screens/profile/EditProfileScreen';
 import { colors } from '../theme';
@@ -31,6 +34,9 @@ function HomeStackScreen() {
       <HomeStack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
       <HomeStack.Screen name="ClubsList" component={ClubsListScreen} options={{ title: 'Clubs' }} />
       <HomeStack.Screen name="ClubDetail" component={ClubDetailScreen} options={{ title: 'Club' }} />
+      <HomeStack.Screen name="Feed" component={FeedScreen} options={{ title: 'Community Feed' }} />
+      <HomeStack.Screen name="CreatePost" component={CreatePostScreen} options={{ title: 'New Post' }} />
+      <HomeStack.Screen name="PostDetail" component={PostDetailScreen} options={{ title: 'Post' }} />
     </HomeStack.Navigator>
   );
 }
