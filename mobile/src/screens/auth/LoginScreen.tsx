@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { Text, TextInput, Button } from 'react-native-paper';
 import { useSendOtp } from '../../hooks/useAuth';
+import { CarromBoardHero } from '../../components/CarromBoardHero';
 import { colors } from '../../theme';
 
 interface Props {
@@ -27,47 +28,56 @@ export function LoginScreen({ navigation }: Props) {
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <View style={styles.content}>
-        <View style={styles.header}>
-          <Text style={styles.logo}>Carrom Carrom</Text>
-          <Text style={styles.subtitle}>West Bengal's Carrom Community</Text>
-        </View>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.content}>
+          {/* Hero: Carrom Board with liquid hover animation */}
+          <CarromBoardHero />
 
-        <View style={styles.form}>
-          <Text style={styles.welcomeText}>Welcome! Sign in to continue</Text>
-          <TextInput
-            label="Email address"
-            value={email}
-            onChangeText={setEmail}
-            mode="outlined"
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoComplete="email"
-            style={styles.input}
-            outlineColor={colors.border}
-            activeOutlineColor={colors.primary}
-          />
-          <Button
-            mode="contained"
-            onPress={handleSendOtp}
-            loading={sendOtp.isPending}
-            disabled={!email.trim() || sendOtp.isPending}
-            style={styles.button}
-            buttonColor={colors.primary}
-          >
-            Send OTP
-          </Button>
-          {sendOtp.isError && (
-            <Text style={styles.error}>
-              {(sendOtp.error as any)?.response?.data?.message || 'Failed to send OTP'}
-            </Text>
-          )}
-        </View>
+          <View style={styles.header}>
+            <Text style={styles.logo}>Carrom Carrom</Text>
+            <Text style={styles.subtitle}>West Bengal's Carrom Community</Text>
+          </View>
 
-        <Text style={styles.hint}>
-          For demo: use any email, OTP is 123456
-        </Text>
-      </View>
+          <View style={styles.form}>
+            <Text style={styles.welcomeText}>Welcome! Sign in to continue</Text>
+            <TextInput
+              label="Email address"
+              value={email}
+              onChangeText={setEmail}
+              mode="outlined"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoComplete="email"
+              style={styles.input}
+              outlineColor={colors.border}
+              activeOutlineColor={colors.primary}
+            />
+            <Button
+              mode="contained"
+              onPress={handleSendOtp}
+              loading={sendOtp.isPending}
+              disabled={!email.trim() || sendOtp.isPending}
+              style={styles.button}
+              buttonColor={colors.primary}
+            >
+              Send OTP
+            </Button>
+            {sendOtp.isError && (
+              <Text style={styles.error}>
+                {(sendOtp.error as any)?.response?.data?.message || 'Failed to send OTP'}
+              </Text>
+            )}
+          </View>
+
+          <Text style={styles.hint}>
+            For demo: use any email, OTP is 123456
+          </Text>
+        </View>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }
@@ -77,14 +87,21 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+  },
   content: {
     flex: 1,
     justifyContent: 'center',
     padding: 24,
+    maxWidth: 480,
+    width: '100%',
+    alignSelf: 'center',
   },
   header: {
     alignItems: 'center',
-    marginBottom: 48,
+    marginBottom: 36,
   },
   logo: {
     fontSize: 36,
