@@ -8,6 +8,9 @@ import { PlayerDetailScreen } from '../screens/rankings/PlayerDetailScreen';
 import { RecordMatchScreen } from '../screens/match/RecordMatchScreen';
 import { MatchHistoryScreen } from '../screens/match/MatchHistoryScreen';
 import { MatchDetailScreen } from '../screens/match/MatchDetailScreen';
+import { ChallengesListScreen } from '../screens/challenge/ChallengesListScreen';
+import { CreateChallengeScreen } from '../screens/challenge/CreateChallengeScreen';
+import { ChallengeDetailScreen } from '../screens/challenge/ChallengeDetailScreen';
 import { PlayScreen } from '../screens/play/PlayScreen';
 import { ProfileScreen } from '../screens/profile/ProfileScreen';
 import { EditProfileScreen } from '../screens/profile/EditProfileScreen';
@@ -17,6 +20,7 @@ import { MainTabParamList } from './types';
 const Tab = createBottomTabNavigator<MainTabParamList>();
 const RankingsStack = createNativeStackNavigator();
 const MatchStack = createNativeStackNavigator();
+const ChallengesStack = createNativeStackNavigator();
 const ProfileStack = createNativeStackNavigator();
 
 function RankingsStackScreen() {
@@ -42,6 +46,16 @@ function MatchStackScreen() {
   );
 }
 
+function ChallengesStackScreen() {
+  return (
+    <ChallengesStack.Navigator>
+      <ChallengesStack.Screen name="ChallengesList" component={ChallengesListScreen} options={{ title: 'Challenges' }} />
+      <ChallengesStack.Screen name="ChallengeDetail" component={ChallengeDetailScreen} options={{ title: 'Challenge' }} />
+      <ChallengesStack.Screen name="CreateChallenge" component={CreateChallengeScreen} options={{ title: 'New Challenge' }} />
+    </ChallengesStack.Navigator>
+  );
+}
+
 function ProfileStackScreen() {
   return (
     <ProfileStack.Navigator>
@@ -49,18 +63,6 @@ function ProfileStackScreen() {
       <ProfileStack.Screen name="EditProfile" component={EditProfileScreen} options={{ title: 'Edit Profile' }} />
     </ProfileStack.Navigator>
   );
-}
-
-// Simple icon text component since we avoid vector-icons dependency complexity
-function TabIcon({ label, focused }: { label: string; focused: boolean }) {
-  const icons: Record<string, string> = {
-    Home: 'H',
-    Rankings: 'R',
-    Match: '+',
-    Play: 'P',
-    Profile: 'U',
-  };
-  return null; // Icons handled by tabBarLabel
 }
 
 export function MainTabs() {
@@ -79,7 +81,7 @@ export function MainTabs() {
         component={HomeScreen}
         options={{
           tabBarLabel: 'Home',
-          tabBarIcon: ({ color, size }) => null,
+          tabBarIcon: () => null,
         }}
       />
       <Tab.Screen
@@ -87,7 +89,7 @@ export function MainTabs() {
         component={RankingsStackScreen}
         options={{
           tabBarLabel: 'Rankings',
-          tabBarIcon: ({ color, size }) => null,
+          tabBarIcon: () => null,
         }}
       />
       <Tab.Screen
@@ -95,15 +97,15 @@ export function MainTabs() {
         component={MatchStackScreen}
         options={{
           tabBarLabel: 'Match',
-          tabBarIcon: ({ color, size }) => null,
+          tabBarIcon: () => null,
         }}
       />
       <Tab.Screen
-        name="PlayTab"
-        component={PlayScreen}
+        name="ChallengesTab"
+        component={ChallengesStackScreen}
         options={{
-          tabBarLabel: 'Play',
-          tabBarIcon: ({ color, size }) => null,
+          tabBarLabel: 'Challenges',
+          tabBarIcon: () => null,
         }}
       />
       <Tab.Screen
@@ -111,7 +113,7 @@ export function MainTabs() {
         component={ProfileStackScreen}
         options={{
           tabBarLabel: 'Profile',
-          tabBarIcon: ({ color, size }) => null,
+          tabBarIcon: () => null,
         }}
       />
     </Tab.Navigator>

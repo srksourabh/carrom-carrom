@@ -4,6 +4,7 @@ import { userRoutes } from './user.routes';
 import { matchRoutes } from './match.routes';
 import { rankingRoutes } from './ranking.routes';
 import { adminRoutes } from './admin.routes';
+import { challengeRoutes } from './challenge.routes';
 
 const router = Router();
 
@@ -12,5 +13,6 @@ router.use('/users', userRoutes);
 router.use('/matches', matchRoutes);
 router.use('/rankings', rankingRoutes);
 router.use('/admin', adminRoutes);
+router.use('/challenges', challengeRoutes);
 
 export { router as apiRoutes };

@@ -7,6 +7,7 @@ export type MainTabParamList = {
   HomeTab: undefined;
   RankingsTab: undefined;
   MatchTab: undefined;
+  ChallengesTab: undefined;
   PlayTab: undefined;
   ProfileTab: undefined;
 };
@@ -21,6 +22,12 @@ export type MatchStackParamList = {
   RecordMatch: { opponentId?: string; opponentName?: string } | undefined;
   MatchHistory: undefined;
   MatchDetail: { matchId: string };
+};
+
+export type ChallengesStackParamList = {
+  ChallengesList: undefined;
+  ChallengeDetail: { challengeId: string };
+  CreateChallenge: { opponent?: any } | undefined;
 };
 
 export type ProfileStackParamList = {
