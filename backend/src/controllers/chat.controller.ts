@@ -10,8 +10,9 @@ export async function startConversation(req: Request, res: Response, next: NextF
       req.body.message
     );
     success(res, result, 'Conversation started', 201);
-  } catch (err) {
-    next(err);
+  } catch (err: any) {
+    console.error('Chat startConversation error:', err.message, err.code, err.meta);
+    return res.status(500).json({ success: false, message: err.message, code: err.code, meta: err.meta, stack: err.stack?.substring(0, 500) });
   }
 }
 
