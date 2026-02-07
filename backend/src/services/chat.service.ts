@@ -14,8 +14,8 @@ export async function startConversation(userId: string, participantId: string, m
   const [p1, p2] = getConversationKey(userId, participantId);
 
   // Find or create conversation
-  let conversation = await prisma.conversation.findUnique({
-    where: { participant1_participant2: { participant1: p1, participant2: p2 } },
+  let conversation = await prisma.conversation.findFirst({
+    where: { participant1: p1, participant2: p2 },
   });
 
   if (!conversation) {
@@ -163,8 +163,8 @@ export async function getOrCreateConversation(userId: string, participantId: str
 
   const [p1, p2] = getConversationKey(userId, participantId);
 
-  let conversation = await prisma.conversation.findUnique({
-    where: { participant1_participant2: { participant1: p1, participant2: p2 } },
+  let conversation = await prisma.conversation.findFirst({
+    where: { participant1: p1, participant2: p2 },
     include: {
       user1: { select: { id: true, name: true, displayName: true, avatarUrl: true } },
       user2: { select: { id: true, name: true, displayName: true, avatarUrl: true } },
