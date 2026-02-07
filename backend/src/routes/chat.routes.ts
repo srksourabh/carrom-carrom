@@ -9,26 +9,21 @@ import { success } from '../utils/apiResponse';
 const router = Router();
 
 // Unauthenticated debug ping
-router.get('/ping', (_req, res) => res.json({ pong: true, v: 4, t: Date.now() }));
-
-// Bare minimum test: no auth, no validation, just try the service call
-router.post('/test-start', async (req: Request, res: Response) => {
-  try {
-    res.json({ step: 'handler reached', body: req.body });
-  } catch (err: any) {
-    res.status(500).json({ step: 'handler error', message: err.message });
-  }
-});
+router.get('/ping', (_req, res) => res.json({ pong: true, v: 5, t: Date.now() }));
 
 router.use(authenticate);
 
-// Inline handler with full error capture
-router.post('/conversations', validate(startConversationSchema), async (req: Request, res: Response) => {
+// NO validation, directly call service
+router.post('/conversations', async (req: Request, res: Response) => {
   try {
+    const { participantId, message } = req.body;
+    if (!participantId || !message) {
+      return res.status(400).json({ success: false, message: 'participantId and message required' });
+    }
     const result = await chatService.startConversation(
       req.user!.userId,
-      req.body.participantId,
-      req.body.message
+      participantId,
+      message
     );
     success(res, result, 'Conversation started', 201);
   } catch (err: any) {
