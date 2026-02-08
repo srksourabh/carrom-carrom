@@ -51,13 +51,14 @@ Strict MVC layering: **routes → controllers → services → Prisma**
 - `middleware/admin.ts` — checks `req.user.role` for admin access
 - `middleware/errorHandler.ts` — `AppError` class + global handler (also maps Prisma error codes P2002/P2025)
 - `utils/elo.ts` — ELO calculation, K-factor 32, floor 100
+- `utils/carromPhysics.ts` — 2D physics engine (700x700 board, elastic collisions, friction, 4-corner pockets)
 
 ### Mobile (`mobile/src/`)
 - `screens/` — screen components organized by feature (auth, home, rankings, match, challenge, club, feed, chat, profile, play)
 - `hooks/` — React Query hooks wrapping API calls (one per domain: useAuth, useMatches, useRankings, etc.)
 - `services/api.ts` — Axios instance with smart base URL detection (relative `/api/v1` on web prod, `localhost:3000` in dev) and automatic token refresh on 401
 - `stores/authStore.ts` — Zustand with AsyncStorage persistence for auth state
-- `navigation/` — React Navigation: `AuthStack` (login/OTP) vs `MainTabs` (5 bottom tabs with nested stacks)
+- `navigation/` — React Navigation: `AuthStack` (login/OTP) vs `MainTabs` (6 bottom tabs with nested stacks)
 - UI: React Native Paper (Material Design)
 - Path alias: `@/*` → `src/*`
 
@@ -73,7 +74,13 @@ Record match (PENDING) → opponent confirms → ELO recalculated in Prisma tran
 - Everything else → `index.html` (SPA)
 
 ### Database
-Prisma schema at `backend/prisma/schema.prisma`. Key models: User, Club, Match, Tournament, Challenge, Post, Comment, Conversation, Message, Notification. Redis is optional with graceful fallback — rankings cache (5min TTL).
+Prisma schema at `backend/prisma/schema.prisma`. Key models: User, Club, Match, Tournament, Challenge, Post, Comment, Conversation, Message, Notification, LiveStream, GameRoom, GameMove. Redis is optional with graceful fallback — rankings cache (5min TTL).
+
+### Virtual Carrom Game Flow
+Create game (WAITING) → opponent joins (IN_PROGRESS) → turns alternate: player sends striker position/angle/power → server runs physics simulation → returns updated board + pocketed coins → game ends when target score reached or all coins pocketed.
+
+### Live Streaming Flow
+Create stream (isLive=true) → viewers join/leave (viewer count tracked) → host ends stream (isLive=false).
 
 ## Important Gotchas
 
@@ -81,6 +88,7 @@ Prisma schema at `backend/prisma/schema.prisma`. Key models: User, Club, Match, 
 - **Prisma compound keys**: `findUnique` with `@@unique` needs `{ field1_field2: { field1, field2 } }` syntax. Prefer `findFirst` with individual fields.
 - **Windows curl**: Single-quoted JSON with `!` gets mangled in Git Bash. Use `--data-raw` with escaped double quotes.
 - **Vercel env vars**: Use `printf` not `echo` when piping to `vercel env add` (echo adds trailing newline).
+- **Prisma Json fields**: Cast arrays via `as unknown as Prisma.InputJsonValue` when writing to Json columns.
 - **No test suite or linter configured** — no Jest/Vitest/ESLint in the project yet.
 - **Redis optional in serverless** — OTP mock mode bypasses Redis entirely.
 - `.env` is loaded from both `backend/.env` and root `.env` (see `backend/src/config/index.ts`).
