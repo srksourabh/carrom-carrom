@@ -8,6 +8,8 @@ import { challengeRoutes } from './challenge.routes';
 import { clubRoutes } from './club.routes';
 import { feedRoutes } from './feed.routes';
 import { chatRoutes } from './chat.routes';
+import { livestreamRoutes } from './livestream.routes';
+import { gameRoutes } from './game.routes';
 
 const router = Router();
 
@@ -20,5 +22,7 @@ router.use('/challenges', challengeRoutes);
 router.use('/clubs', clubRoutes);
 router.use('/feed', feedRoutes);
 router.use('/chat', chatRoutes);
+router.use('/streams', livestreamRoutes);
+router.use('/games', gameRoutes);
 
 export { router as apiRoutes };

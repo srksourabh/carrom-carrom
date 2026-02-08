@@ -51,6 +51,13 @@ enum ChallengeStatus {
   EXPIRED
 }
 
+enum GameStatus {
+  WAITING
+  IN_PROGRESS
+  COMPLETED
+  ABANDONED
+}
+
 enum NotificationType {
   MATCH_INVITE
   MATCH_CONFIRMED
@@ -106,6 +113,11 @@ model User {
   messagesSent       Message[]               @relation("MessageSender")
   notifications      Notification[]
   userAchievements   UserAchievement[]
+  liveStreams         LiveStream[]
+  gamesAsPlayer1     GameRoom[]          @relation("GamePlayer1")
+  gamesAsPlayer2     GameRoom[]          @relation("GamePlayer2")
+  gamesWon           GameRoom[]          @relation("GameWinner")
+  gameMoves          GameMove[]
 
   @@map("users")
 }
@@ -241,6 +253,7 @@ model RankingsHistory {
 
 model LiveStream {
   id           String    @id @default(uuid())
+  hostId       String    @map("host_id")
   title        String
   description  String?
   streamUrl    String    @map("stream_url")
@@ -251,7 +264,53 @@ model LiveStream {
   endedAt      DateTime? @map("ended_at")
   createdAt    DateTime  @default(now()) @map("created_at")
 
+  host User @relation(fields: [hostId], references: [id])
+
+  @@index([hostId])
+  @@index([isLive])
   @@map("live_streams")
+}
+
+model GameRoom {
+  id            String     @id @default(uuid())
+  player1Id     String     @map("player1_id")
+  player2Id     String?    @map("player2_id")
+  status        GameStatus @default(WAITING)
+  currentTurn   String?    @map("current_turn")
+  player1Score  Int        @default(0) @map("player1_score")
+  player2Score  Int        @default(0) @map("player2_score")
+  targetScore   Int        @default(25) @map("target_score")
+  round         Int        @default(1)
+  winnerId      String?    @map("winner_id")
+  gameState     Json?      @map("game_state")
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @updatedAt @map("updated_at")
+
+  player1 User       @relation("GamePlayer1", fields: [player1Id], references: [id])
+  player2 User?      @relation("GamePlayer2", fields: [player2Id], references: [id])
+  winner  User?      @relation("GameWinner", fields: [winnerId], references: [id])
+  moves   GameMove[]
+
+  @@index([player1Id])
+  @@index([player2Id])
+  @@index([status])
+  @@map("game_rooms")
+}
+
+model GameMove {
+  id         String   @id @default(uuid())
+  gameRoomId String   @map("game_room_id")
+  playerId   String   @map("player_id")
+  moveType   String   @map("move_type")
+  moveData   Json     @map("move_data")
+  round      Int
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  gameRoom GameRoom @relation(fields: [gameRoomId], references: [id], onDelete: Cascade)
+  player   User     @relation(fields: [playerId], references: [id])
+
+  @@index([gameRoomId, createdAt])
+  @@map("game_moves")
 }
 
 model Post {

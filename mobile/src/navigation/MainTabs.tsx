@@ -19,6 +19,12 @@ import { PostDetailScreen } from '../screens/feed/PostDetailScreen';
 import { ConversationsListScreen } from '../screens/chat/ConversationsListScreen';
 import { ChatScreen } from '../screens/chat/ChatScreen';
 import { NewChatScreen } from '../screens/chat/NewChatScreen';
+import { GameLobbyScreen } from '../screens/play/GameLobbyScreen';
+import { GameRoomScreen } from '../screens/play/GameRoomScreen';
+import { GameResultScreen } from '../screens/play/GameResultScreen';
+import { LiveStreamsListScreen } from '../screens/livestream/LiveStreamsListScreen';
+import { LiveStreamDetailScreen } from '../screens/livestream/LiveStreamDetailScreen';
+import { CreateLiveStreamScreen } from '../screens/livestream/CreateLiveStreamScreen';
 import { ProfileScreen } from '../screens/profile/ProfileScreen';
 import { EditProfileScreen } from '../screens/profile/EditProfileScreen';
 import { colors } from '../theme';
@@ -29,6 +35,7 @@ const HomeStack = createNativeStackNavigator();
 const RankingsStack = createNativeStackNavigator();
 const MatchStack = createNativeStackNavigator();
 const ChallengesStack = createNativeStackNavigator();
+const PlayStack = createNativeStackNavigator();
 const ProfileStack = createNativeStackNavigator();
 
 function HomeStackScreen() {
@@ -80,6 +87,19 @@ function ChallengesStackScreen() {
   );
 }
 
+function PlayStackScreen() {
+  return (
+    <PlayStack.Navigator>
+      <PlayStack.Screen name="GameLobby" component={GameLobbyScreen} options={{ title: 'Play' }} />
+      <PlayStack.Screen name="GameRoom" component={GameRoomScreen} options={{ title: 'Game' }} />
+      <PlayStack.Screen name="GameResult" component={GameResultScreen} options={{ title: 'Result' }} />
+      <PlayStack.Screen name="LiveStreamsList" component={LiveStreamsListScreen} options={{ title: 'Live Streams' }} />
+      <PlayStack.Screen name="LiveStreamDetail" component={LiveStreamDetailScreen} options={{ title: 'Stream' }} />
+      <PlayStack.Screen name="CreateLiveStream" component={CreateLiveStreamScreen} options={{ title: 'Go Live' }} />
+    </PlayStack.Navigator>
+  );
+}
+
 function ProfileStackScreen() {
   return (
     <ProfileStack.Navigator>
@@ -113,6 +133,14 @@ export function MainTabs() {
         component={RankingsStackScreen}
         options={{
           tabBarLabel: 'Rankings',
+          tabBarIcon: () => null,
+        }}
+      />
+      <Tab.Screen
+        name="PlayTab"
+        component={PlayStackScreen}
+        options={{
+          tabBarLabel: 'Play',
           tabBarIcon: () => null,
         }}
       />
@@ -153,7 +181,7 @@ const styles = StyleSheet.create({
     paddingTop: 8,
   },
   tabLabel: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '600',
   },
 });
